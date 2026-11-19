@@ -306,3 +306,25 @@ footer { padding: 70px max(24px, calc((100vw - 1272px)/2)) 25px; color: var(--mi
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
+
+/* Smoke animation */
+.smoke-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.smoke-p {
+  position: absolute;
+  bottom: -60px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--ember) 0%, transparent 70%);
+  opacity: var(--max-opacity, 0.4);
+  filter: blur(40px);
+  animation: smoke-rise var(--dur, 16s) ease-in-out var(--delay, 0s) infinite;
+  transform: translateX(var(--drift, 0px));
+}
+@keyframes smoke-rise {
+  0%   { transform: translate(0, 0) scale(1); opacity: 0; }
+  15%  { opacity: var(--max-opacity, 0.4); }
+  50%  { transform: translate(var(--drift, -20px), -50vh) scale(1.2); opacity: var(--max-opacity, 0.4); }
+  85%  { opacity: var(--max-opacity, 0.4); }
+  100% { transform: translate(var(--drift, 20px), -110vh) scale(0.8); opacity: 0; }
+}

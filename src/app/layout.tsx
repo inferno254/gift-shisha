@@ -76,7 +76,7 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans antialiased min-h-screen flex flex-col bg-[var(--ink)] text-[var(--cream)]">
-        <SmokeBackground color="#f59e0b" opacity={0.05} count={6} />
+        <SmokeBackground />
         <Providers>
           <Header />
           <div className="flex-1 relative">{children}</div>
