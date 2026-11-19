@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase, getSupabaseAdmin } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { formatKES } from '@/lib/utils';
 
@@ -58,7 +58,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setSyncing(true);
     const loadCart = async () => {
       try {
-        const { data, error } = await (supabase as any)
+        const { data, error } = await getSupabaseAdmin()
           .from('cart_items')
           .select('*, product:products(*)')
           .eq('user_id', user.id);
@@ -91,7 +91,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const persistCart = useCallback(async (newItems: CartItem[]) => {
     if (!user) return;
     try {
-      const { error: deleteError } = await (supabase as any)
+      const { error: deleteError } = await getSupabaseAdmin()
         .from('cart_items')
         .delete()
         .eq('user_id', user.id);
@@ -102,7 +102,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           product_id: item.product.id,
           quantity: item.quantity,
         }));
-        const { error: insertError } = await (supabase as any)
+        const { error: insertError } = await getSupabaseAdmin()
           .from('cart_items')
           .insert(rows);
         if (insertError) throw insertError;
