@@ -1,0 +1,9 @@
+{
+  "buildCommand": "next build --webpack",
+  "installCommand": "npm install",
+  "devCommand": "next dev",
+  "framework": "nextjs",
+  "env": {
+    "NEXT_PUBLIC_APP_URL": "https://gift-shisha.vercel.app"
+  }
+}
