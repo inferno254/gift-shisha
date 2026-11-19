@@ -38,6 +38,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [syncing, setSyncing] = useState(false);
   const { user } = useAuth();
 
+  // Load cart from localStorage for guest users
+  useEffect(() => {
+    if (user) return;
+    try {
+      const stored = localStorage.getItem('gift-shisha-cart');
+      if (stored) {
+        setItems(JSON.parse(stored));
+      }
+    } catch {}
+  }, [user?.id]);
+
   useEffect(() => {
     if (!user) {
       setItems([]);
@@ -70,6 +81,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       cancelled = true;
     };
   }, [user?.id]);
+
+  // Persist guest cart to localStorage on every change
+  useEffect(() => {
+    if (user) return;
+    try { localStorage.setItem('gift-shisha-cart', JSON.stringify(items)); } catch {}
+  }, [items, user?.id]);
 
   const persistCart = useCallback(async (newItems: CartItem[]) => {
     if (!user) return;
@@ -107,17 +124,29 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const qty = Math.max(1, quantityToAdd);
     setItems((prev) => {
       const existing = prev.find((i) => i.product.id === product.id);
+      let updated: CartItem[];
       if (existing) {
-        return prev.map((i) =>
+        updated = prev.map((i) =>
           i.product.id === product.id ? { ...i, quantity: i.quantity + qty } : i
         );
+      } else {
+        updated = [...prev, { product, quantity: qty }];
       }
-      return [...prev, { product, quantity: qty }];
+      if (!user) {
+        try { localStorage.setItem('gift-shisha-cart', JSON.stringify(updated)); } catch {}
+      }
+      return updated;
     });
   };
 
   const removeItem = (product: CartItem['product']) => {
-    setItems((prev) => prev.filter((i) => i.product.id !== product.id));
+    setItems((prev) => {
+      const updated = prev.filter((i) => i.product.id !== product.id);
+      if (!user) {
+        try { localStorage.setItem('gift-shisha-cart', JSON.stringify(updated)); } catch {}
+      }
+      return updated;
+    });
   };
 
   const updateQuantity = (product: CartItem['product'], quantity: number) => {
@@ -125,15 +154,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
       removeItem(product);
       return;
     }
-    setItems((prev) =>
-      prev.map((i) =>
+    setItems((prev) => {
+      const updated = prev.map((i) =>
         i.product.id === product.id ? { ...i, quantity } : i
-      )
-    );
+      );
+      if (!user) {
+        try { localStorage.setItem('gift-shisha-cart', JSON.stringify(updated)); } catch {}
+      }
+      return updated;
+    });
   };
 
   const clearCart = () => {
     setItems([]);
+    if (!user) {
+      try { localStorage.removeItem('gift-shisha-cart'); } catch {}
+    }
   };
 
   const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
