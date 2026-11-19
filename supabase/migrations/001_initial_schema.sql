@@ -100,11 +100,23 @@ alter table public.order_items enable row level security;
 alter table public.cart_items enable row level security;
 alter table public.payment_transactions enable row level security;
 
+-- Grant privileges to anon and service_role (fixes "permission denied")
+grant select on public.categories to anon;
+grant select on public.products to anon;
+grant select, insert, update, delete on public.profiles to anon;
+grant select, insert on public.orders to anon;
+grant select on public.order_items to anon;
+grant select, insert, update, delete on public.cart_items to anon;
+grant select on public.payment_transactions to anon;
+
+grant all privileges on all tables in schema public to service_role;
+
 -- RLS Policies (idempotent)
 drop policy if exists "Public read access for categories" on public.categories;
 drop policy if exists "Public read access for products" on public.products;
 drop policy if exists "Users can view own profile" on public.profiles;
 drop policy if exists "Users can update own profile" on public.profiles;
+drop policy if exists "Users can insert own profile" on public.profiles;
 drop policy if exists "Users can view own orders" on public.orders;
 drop policy if exists "Users can insert own orders" on public.orders;
 drop policy if exists "Users can view own order items" on public.order_items;
@@ -122,6 +134,9 @@ create policy "Users can view own profile"
 
 create policy "Users can update own profile"
   on public.profiles for update using (auth.uid() = id);
+
+create policy "Users can insert own profile"
+  on public.profiles for insert with check (auth.uid() = id);
 
 create policy "Users can view own orders"
   on public.orders for select using (auth.uid() = user_id);
