@@ -100,21 +100,23 @@ export default function HomePage() {
         </div>
         <div className="category-scroll">
           {shishaCategories.map((cat) => (
-            <div key={cat.slug} className="category-chip" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div key={cat.slug} className="category-chip" style={{ display: 'flex', flexDirection: 'column', gap: 8, position: 'relative' }}>
               <Link href={`/shop?category=${cat.slug}`} style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
                 <div className="category-photo"><Image src={cat.image} alt={cat.name} width={64} height={64} /></div>
                 {cat.name}
                 <small>{cat.slug === 'pipes' ? 'From KES 4,200' : cat.slug === 'flavours' ? 'From KES 450' : cat.slug === 'charcoal' ? 'From KES 200' : cat.slug === 'accessories' ? 'From KES 200' : 'From KES 6,200'}</small>
-                <div className="category-arrow"><Icon name="chevronRight" size={14} /></div>
+                <div className="category-arrow" style={{ marginTop: 'auto' }}><Icon name="chevronRight" size={14} /></div>
               </Link>
               <button
                 className="add-button"
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   const firstProduct = shishaProducts.find((p) => p.category === cat.slug);
                   if (firstProduct) addItem(firstProduct);
                 }}
                 aria-label={`Add a ${cat.name} to cart`}
-                style={{ margin: '0 auto', width: 32, height: 32 }}
+                style={{ margin: '0 auto', width: 32, height: 32, position: 'relative', zIndex: 5, flexShrink: 0 }}
               >
                 <Icon name="plus" size={14} />
               </button>
