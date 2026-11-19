@@ -130,31 +130,31 @@ create policy "Public read access for products"
   on public.products for select using (true);
 
 create policy "Users can view own profile"
-  on public.profiles for select using (auth.uid() = id);
+  on public.profiles for select using (auth.uid()::text = id::text);
 
 create policy "Users can update own profile"
-  on public.profiles for update using (auth.uid() = id);
+  on public.profiles for update using (auth.uid()::text = id::text);
 
 create policy "Users can insert own profile"
-  on public.profiles for insert with check (auth.uid() = id);
+  on public.profiles for insert with check (auth.uid()::text = id::text);
 
 create policy "Users can view own orders"
-  on public.orders for select using (auth.uid() = user_id);
+  on public.orders for select using (auth.uid()::text = user_id::text);
 
 create policy "Users can insert own orders"
-  on public.orders for insert with check (auth.uid() = user_id);
+  on public.orders for insert with check (auth.uid()::text = user_id::text);
 
 create policy "Users can view own order items"
   on public.order_items for select using (exists (
-    select 1 from public.orders where orders.id = order_items.order_id and orders.user_id = auth.uid()
+    select 1 from public.orders where orders.id::text = order_items.order_id::text and orders.user_id::text = auth.uid()::text
   ));
 
 create policy "Users can manage own cart items"
-  on public.cart_items for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  on public.cart_items for all using (auth.uid()::text = user_id::text) with check (auth.uid()::text = user_id::text);
 
 create policy "Users can view own payment transactions"
   on public.payment_transactions for select using (exists (
-    select 1 from public.orders where orders.id = payment_transactions.order_id and orders.user_id = auth.uid()
+    select 1 from public.orders where orders.id::text = payment_transactions.order_id::text and orders.user_id::text = auth.uid()::text
   ));
 
 -- Insert default categories
