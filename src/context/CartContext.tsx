@@ -1,7 +1,6 @@
 'use client';
 
 import { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
-import { supabase, getSupabaseAdmin } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { formatKES } from '@/lib/utils';
 
@@ -38,7 +37,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [syncing, setSyncing] = useState(false);
   const { user } = useAuth();
 
-  // Load cart from localStorage for guest users
   useEffect(() => {
     if (user) return;
     try {
@@ -58,12 +56,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setSyncing(true);
     const loadCart = async () => {
       try {
-        const { data, error } = await getSupabaseAdmin()
-          .from('cart_items')
-          .select('*, product:products(*)')
-          .eq('user_id', user.id);
-        if (error) throw error;
-        if (!cancelled && data) {
+        const res = await fetch('/api/cart', {
+          headers: { 'x-user-id': user.id },
+        });
+        const data = await res.json();
+        if (!cancelled && data && !data.error) {
           const loaded: CartItem[] = data.map((row: any) => ({
             product: row.product,
             quantity: row.quantity,
@@ -91,22 +88,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const persistCart = useCallback(async (newItems: CartItem[]) => {
     if (!user) return;
     try {
-      const { error: deleteError } = await getSupabaseAdmin()
-        .from('cart_items')
-        .delete()
-        .eq('user_id', user.id);
-      if (deleteError) throw deleteError;
-      if (newItems.length > 0) {
-        const rows = newItems.map((item) => ({
-          user_id: user.id,
-          product_id: item.product.id,
-          quantity: item.quantity,
-        }));
-        const { error: insertError } = await getSupabaseAdmin()
-          .from('cart_items')
-          .insert(rows);
-        if (insertError) throw insertError;
-      }
+      await fetch('/api/cart', {
+        method: 'POST',
+        headers: {
+          'x-user-id': user.id,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'sync', items: newItems }),
+      });
     } catch (err) {
       console.error('Failed to persist cart:', err);
     }

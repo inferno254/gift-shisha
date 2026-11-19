@@ -3,7 +3,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase, getSupabaseAdmin } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 export type User = {
   id: string;
@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const parsed = JSON.parse(stored);
         supabase.auth.getSession().then(async ({ data: { session } }) => {
           if (session?.user?.id === parsed.id) {
-            const { data: profile } = await getSupabaseAdmin()
+            const { data: profile } = await (supabase as any)
               .from('profiles')
               .select('*')
               .eq('id', parsed.id)
@@ -78,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) return { error: error.message };
       if (data.user) {
-        const { data: profile } = await getSupabaseAdmin()
+        const { data: profile } = await (supabase as any)
           .from('profiles')
           .select('*')
           .eq('id', data.user.id)
@@ -107,7 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data, error } = await supabase.auth.signUp({ email, password });
       if (error) return { error: error.message };
       if (data.user) {
-        await getSupabaseAdmin().from('profiles').insert({
+        await (supabase as any).from('profiles').insert({
           id: data.user.id,
           name,
           email,
@@ -136,7 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const updateProfile = async (updates: Partial<Omit<User, 'id'>>): Promise<{ error?: string }> => {
     if (!user) return { error: 'Not authenticated' };
     try {
-const { data, error } = await getSupabaseAdmin()
+const { data, error } = await (supabase as any)
           .from('profiles')
           .update({ ...updates, updated_at: new Date().toISOString() })
           .eq('id', user.id)
