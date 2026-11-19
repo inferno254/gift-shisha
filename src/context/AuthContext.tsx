@@ -38,24 +38,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const parsed = JSON.parse(stored);
         supabase.auth.getSession().then(async ({ data: { session } }) => {
           if (session?.user?.id === parsed.id) {
-            const { data: profile } = await (supabase as any)
-              .from('profiles')
-              .select('*')
-              .eq('id', parsed.id)
-              .maybeSingle();
-
             const authUser: User = {
               id: parsed.id,
-              name: profile?.name || parsed.name,
-              email: profile?.email || parsed.email,
-              phone: profile?.phone || parsed.phone || null,
-              location: profile?.location || parsed.location || null,
-              locationDetail: profile?.location_detail || parsed.locationDetail || null,
+              name: parsed.name,
+              email: parsed.email,
+              phone: parsed.phone || null,
+              location: parsed.location || null,
+              locationDetail: parsed.locationDetail || null,
             };
             setUser(authUser);
-            localStorage.setItem('gift-shisha-auth', JSON.stringify(authUser));
-          } else {
-            localStorage.removeItem('gift-shisha-auth');
           }
           setLoading(false);
         });
@@ -78,18 +69,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) return { error: error.message };
       if (data.user) {
-        const { data: profile } = await (supabase as any)
-          .from('profiles')
-          .select('*')
-          .eq('id', data.user.id)
-          .maybeSingle();
         const authUser: User = {
           id: data.user.id,
-          name: profile?.name || 'User',
+          name: 'User',
           email: data.user.email || null,
-          phone: profile?.phone || null,
-          location: profile?.location || null,
-          locationDetail: profile?.location_detail || null,
+          phone: null,
+          location: null,
+          locationDetail: null,
         };
         setUser(authUser);
         localStorage.setItem('gift-shisha-auth', JSON.stringify(authUser));
@@ -107,13 +93,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data, error } = await supabase.auth.signUp({ email, password });
       if (error) return { error: error.message };
       if (data.user) {
-        await (supabase as any).from('profiles').insert({
-          id: data.user.id,
-          name,
-          email,
-          location: 'Nairobi CBD',
-          location_detail: 'Gift Shisha, Nairobi CBD',
-        });
         const authUser: User = {
           id: data.user.id,
           name,
@@ -136,20 +115,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const updateProfile = async (updates: Partial<Omit<User, 'id'>>): Promise<{ error?: string }> => {
     if (!user) return { error: 'Not authenticated' };
     try {
-const { data, error } = await (supabase as any)
-          .from('profiles')
-          .update({ ...updates, updated_at: new Date().toISOString() })
-          .eq('id', user.id)
-          .select()
-          .maybeSingle();
-      if (error) return { error: error.message };
+      const res = await fetch('/api/profile', {
+        method: 'POST',
+        headers: {
+          'x-user-id': user.id,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      });
+      const data = await res.json();
+      if (!res.ok) return { error: data.error || 'Update failed' };
       const updated: User = {
         ...user,
-        name: data?.name || user.name,
-        email: data?.email || user.email,
-        phone: data?.phone || user.phone,
-        location: data?.location || user.location,
-        locationDetail: data?.location_detail || user.locationDetail,
+        name: data.name || user.name,
+        email: data.email || user.email,
+        phone: data.phone || user.phone,
+        location: data.location || user.location,
+        locationDetail: data.location_detail || user.locationDetail,
       };
       setUser(updated);
       localStorage.setItem('gift-shisha-auth', JSON.stringify(updated));
