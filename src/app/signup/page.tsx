@@ -12,6 +12,7 @@ export default function SignupPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -62,13 +63,23 @@ export default function SignupPage() {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <label style={{ fontSize: '13px', fontWeight: 800, color: '#a3a3a2' }}>Password</label>
-            <input
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              type="password"
-              placeholder="••••••••"
-              className="w-full min-h-[48px] px-4 bg-[var(--ink)] border border-line rounded-xl text-cream focus:border-ember outline-none"
-            />
+            <div style={{ position: 'relative' }}>
+              <input
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                type={showPassword ? 'text' : 'password'}
+                placeholder="••••••••"
+                className="w-full min-h-[48px] px-4 pr-12 bg-[var(--ink)] border border-line rounded-xl text-cream focus:border-ember outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 0, color: '#a3a3a2', cursor: 'pointer', padding: 4 }}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                <Icon name={showPassword ? 'eyeOff' : 'eye'} size={18} />
+              </button>
+            </div>
           </div>
           <Button variant="amber" type="submit" disabled={loading} className="w-full" style={{ fontSize: 16 }}>
             {loading ? 'Creating account...' : 'Create account'}

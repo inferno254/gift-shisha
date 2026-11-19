@@ -1,22 +1,22 @@
--- Gift Shisha Supabase Schema
+-- Gift Shisha Supabase Schema (idempotent)
 -- Run this in the Supabase SQL Editor
 
--- 1. Enable UUID extension
+-- Enable UUID extension
 create extension if not exists "uuid-ossp";
 
--- 2. Profiles table (user profiles linked to Supabase Auth)
+-- Profiles table
 create table if not exists public.profiles (
-  id uuid references auth.users on delete cascade not null primary key,
+  id uuid references auth.users not null primary key,
   name text,
   phone text,
   email text,
-  location text default 'Nairobi CBD',
+  location text,
   location_detail text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- 3. Categories table
+-- Categories table
 create table if not exists public.categories (
   id uuid default uuid_generate_v4() primary key,
   name text not null,
@@ -25,9 +25,9 @@ create table if not exists public.categories (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- 4. Products table
+-- Products table
 create table if not exists public.products (
-  id text primary key,
+  id uuid default uuid_generate_v4() primary key,
   name text not null,
   description text,
   price numeric not null default 0,
@@ -35,14 +35,13 @@ create table if not exists public.products (
   image_url text,
   is_available boolean default true,
   stock integer default 0,
-  featured boolean default false,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- 5. Orders table
+-- Orders table
 create table if not exists public.orders (
   id uuid default uuid_generate_v4() primary key,
-  user_id text,
+  user_id uuid references public.profiles(id),
   vendor_id uuid,
   status text default 'pending',
   total numeric not null default 0,
@@ -56,31 +55,31 @@ create table if not exists public.orders (
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- 6. Order items table
+-- Order items table
 create table if not exists public.order_items (
   id uuid default uuid_generate_v4() primary key,
   order_id uuid references public.orders(id) on delete cascade,
-  product_id text,
+  product_id uuid,
   product_name text not null,
   quantity integer not null default 1,
   unit_price numeric not null default 0,
   total_price numeric not null default 0
 );
 
--- 7. Cart items table
+-- Cart items table
 create table if not exists public.cart_items (
   id uuid default uuid_generate_v4() primary key,
-  user_id uuid references public.profiles(id) on delete cascade not null,
-  product_id text not null,
+  user_id uuid references public.profiles(id) not null,
+  product_id uuid not null,
   quantity integer not null default 1,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- 8. Payment transactions table (M-Pesa)
+-- Payment transactions table
 create table if not exists public.payment_transactions (
   id uuid default uuid_generate_v4() primary key,
   order_id uuid references public.orders(id),
-  checkout_request_id text unique,
+  checkout_request_id text,
   merchant_request_id text,
   mpesa_receipt_number text,
   amount numeric,
@@ -92,7 +91,7 @@ create table if not exists public.payment_transactions (
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- 9. Enable Row Level Security
+-- Enable Row Level Security
 alter table public.profiles enable row level security;
 alter table public.categories enable row level security;
 alter table public.products enable row level security;
@@ -101,46 +100,53 @@ alter table public.order_items enable row level security;
 alter table public.cart_items enable row level security;
 alter table public.payment_transactions enable row level security;
 
--- 10. RLS Policies
-drop policy if exists "Public read categories" on public.categories;
-create policy "Public read categories" on public.categories for select using (true);
-
-drop policy if exists "Public read products" on public.products;
-create policy "Public read products" on public.products for select using (true);
-
+-- RLS Policies (idempotent)
+drop policy if exists "Public read access for categories" on public.categories;
+drop policy if exists "Public read access for products" on public.products;
 drop policy if exists "Users can view own profile" on public.profiles;
-create policy "Users can view own profile" on public.profiles for select using (auth.uid() = id);
-
 drop policy if exists "Users can update own profile" on public.profiles;
-create policy "Users can update own profile" on public.profiles for update using (auth.uid() = id);
-
-drop policy if exists "Users can insert own profile" on public.profiles;
-create policy "Users can insert own profile" on public.profiles for insert with check (auth.uid() = id);
-
 drop policy if exists "Users can view own orders" on public.orders;
-create policy "Users can view own orders" on public.orders for select using (auth.uid()::text = user_id);
-
 drop policy if exists "Users can insert own orders" on public.orders;
-create policy "Users can insert own orders" on public.orders for insert with check (auth.uid()::text = user_id);
-
 drop policy if exists "Users can view own order items" on public.order_items;
-create policy "Users can view own order items" on public.order_items for select using (
-  exists (select 1 from public.orders where orders.id = order_items.order_id and orders.user_id = auth.uid()::text)
-);
+drop policy if exists "Users can manage own cart items" on public.cart_items;
+drop policy if exists "Users can view own payment transactions" on public.payment_transactions;
 
-drop policy if exists "Users can manage own cart" on public.cart_items;
-create policy "Users can manage own cart" on public.cart_items for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+create policy "Public read access for categories"
+  on public.categories for select using (true);
 
-drop policy if exists "Users can view own transactions" on public.payment_transactions;
-create policy "Users can view own transactions" on public.payment_transactions for select using (
-  exists (select 1 from public.orders where orders.id = payment_transactions.order_id and orders.user_id = auth.uid()::text)
-);
+create policy "Public read access for products"
+  on public.products for select using (true);
 
--- 11. Default Categories
-insert into public.categories (name, slug) values
-  ('Hookah Pipes', 'pipes'),
-  ('Shisha Flavours', 'flavours'),
-  ('Charcoal & Heat', 'charcoal'),
-  ('Accessories', 'accessories'),
-  ('Bundles', 'bundles')
+create policy "Users can view own profile"
+  on public.profiles for select using (auth.uid() = id);
+
+create policy "Users can update own profile"
+  on public.profiles for update using (auth.uid() = id);
+
+create policy "Users can view own orders"
+  on public.orders for select using (auth.uid() = user_id);
+
+create policy "Users can insert own orders"
+  on public.orders for insert with check (auth.uid() = user_id);
+
+create policy "Users can view own order items"
+  on public.order_items for select using (exists (
+    select 1 from public.orders where orders.id = order_items.order_id and orders.user_id = auth.uid()
+  ));
+
+create policy "Users can manage own cart items"
+  on public.cart_items for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+create policy "Users can view own payment transactions"
+  on public.payment_transactions for select using (exists (
+    select 1 from public.orders where orders.id = payment_transactions.order_id and orders.user_id = auth.uid()
+  ));
+
+-- Insert default categories
+insert into public.categories (name, slug, image_url) values
+  ('Hookah Pipes', 'pipes', null),
+  ('Shisha Flavours', 'flavours', null),
+  ('Charcoal & Heat', 'charcoal', null),
+  ('Accessories', 'accessories', null),
+  ('Bundles', 'bundles', null)
 on conflict (slug) do nothing;
