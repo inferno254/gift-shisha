@@ -99,14 +99,29 @@ export default function ProductPage() {
 function MiniCard({ item }: { item: (typeof import('@/data/products').shishaProducts)[number] }) {
   const { addItem } = useCartContext();
   return (
-    <article className="product-card" style={{ minHeight: 'auto', padding: 10 }} onClick={() => addItem(item)}>
-      <div className="product-image" style={{ height: 130, borderRadius: 14 }}>
-        <Image src={item.image} alt={item.name} width={200} height={200} style={{ display: 'block', borderRadius: 14 }} />
-      </div>
+    <article className="product-card" style={{ minHeight: 'auto', padding: 10 }}>
+      <Link href={`/shop/${item.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+        <div className="product-image" style={{ height: 130, borderRadius: 14 }}>
+          <Image src={item.image} alt={item.name} width={200} height={200} style={{ display: 'block', borderRadius: 14 }} />
+        </div>
+      </Link>
       <div className="product-info" style={{ padding: '8px 0 0' }}>
-        <h3 style={{ fontSize: '13px' }}>{item.name}</h3>
-        <div className="product-row" style={{ paddingTop: 6, borderTop: 'none' }}>
+        <Link href={`/shop/${item.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <h3 style={{ fontSize: '13px' }}>{item.name}</h3>
+        </Link>
+        <div className="product-row" style={{ paddingTop: 6, borderTop: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span className="product-price" style={{ fontSize: '14px' }}>{formatKES(item.price)}</span>
+          <button
+            className="add-button"
+            onClick={(e) => {
+              e.stopPropagation();
+              addItem(item, 1);
+            }}
+            aria-label={`Add ${item.name} to cart`}
+            style={{ width: 28, height: 28 }}
+          >
+            <Icon name="plus" size={14} />
+          </button>
         </div>
       </div>
     </article>

@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Gift Shisha - Premium Hookah & Shisha Delivery Kenya',
     description: 'Authentic hookahs, shisha flavours, charcoal and accessories. M-Pesa payments. Delivered fast across Kenya.',
-    images: ['/gs2.jpg'],
+    images: ['/gs5.jpg'],
   },
 };
 
@@ -40,8 +40,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${bricolage.variable} ${dmSans.variable}`}>
       <head>
-        <link rel="icon" href="/gs2.jpg" />
-        <link rel="apple-touch-icon" href="/gs2.jpg" />
+        <link rel="icon" href="/gs5.jpg" />
+        <link rel="apple-touch-icon" href="/gs5.jpg" />
         <Script
           id="favicon-switcher"
           strategy="beforeInteractive"
@@ -56,7 +56,7 @@ export default function RootLayout({
                   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
                 }
                 function setFavicon(theme) {
-                  var href = '/gs2.jpg';
+                  var href = '/gs5.jpg';
                   var link = document.querySelector("link[rel~='icon']");
                   if (!link) {
                     link = document.createElement('link');

@@ -33,7 +33,7 @@ export default function LoginPage() {
       <div className="page-shell" style={{ maxWidth: 420, width: '100%', padding: '30px 20px' }}>
         <div style={{ textAlign: 'center', marginBottom: 30 }}>
           <div className="logo" style={{ width: '72px', height: '52px', margin: '0 auto 12px' }}>
-            <Image src="/gs2.jpg" alt="Gift Shisha" width={72} height={52} />
+            <Image src="/gs5.jpg" alt="Gift Shisha" width={72} height={52} />
           </div>
           <h2 style={{ color: '#f5f5f0', fontSize: 34, marginBottom: 6, letterSpacing: '-.03em' }}>Welcome back</h2>
           <p style={{ color: '#a3a3a2', fontSize: 14 }}>Sign in to track your shisha orders</p>

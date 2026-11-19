@@ -8,7 +8,7 @@ import { useTheme } from '@/context/ThemeContext';
 import Image from 'next/image';
 import Icon from '@/components/ui/Icon';
 
-const LOGO = '/gs2.jpg';
+const LOGO = '/gs5.jpg';
 
 export default function Header() {
   const pathname = usePathname();

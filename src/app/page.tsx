@@ -12,7 +12,7 @@ import Icon from '@/components/ui/Icon';
 import Button from '@/components/ui/Button';
 
 const HERO_PHOTOS = [
-  '/gs2.jpg',
+  '/gs5.jpg',
   'https://images.unsplash.com/photo-UVtEndlShxA?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=85&w=1400',
   'https://images.unsplash.com/photo-OUGqm1DjYIc?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=85&w=1400',
 ];
@@ -55,7 +55,7 @@ export default function HomePage() {
         <div className="hero-visual">
           <div className="delivery-bag">
             <div className="logo">
-              <Image src="/gs2.jpg" alt="Gift Shisha" width={110} height={130} />
+              <Image src="/gs5.jpg" alt="Gift Shisha" width={110} height={130} />
             </div>
             <div className="bag-handle" />
             <strong>Gift Shisha</strong>
@@ -68,7 +68,7 @@ export default function HomePage() {
           <div className="price-tag t2">{formatKES(1300)}</div>
           <div className="phone-card">
             <div className="logo">
-              <Image src="/gs2.jpg" alt="Gift Shisha" width={75} height={88} />
+              <Image src="/gs5.jpg" alt="Gift Shisha" width={75} height={88} />
             </div>
             <div className="mini-check"><Icon name="check" size={34} /></div>
             <b>Order in 60 seconds</b>

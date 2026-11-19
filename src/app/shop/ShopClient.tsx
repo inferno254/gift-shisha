@@ -50,7 +50,7 @@ export default function ShopClient({ initialCategory }: { initialCategory?: stri
   return (
     <div className="min-h-[calc(100vh-68px)] flex flex-col bg-[var(--ink)]">
       <div className="shop-cover">
-        <Image src={shishaProducts.find((p) => p.category === activeCat)?.image || '/gs2.jpg'} alt={catName} width={1200} height={360} className="cover" style={{ objectPosition: 'center 30%', filter: 'brightness(.55) contrast(1.1)' }} />
+        <Image src={shishaProducts.find((p) => p.category === activeCat)?.image || '/gs5.jpg'} alt={catName} width={1200} height={360} className="cover" style={{ objectPosition: 'center 30%', filter: 'brightness(.55) contrast(1.1)' }} />
         <button className="back-float" onClick={() => go('/')}>
           <Icon name="chevron" size={24} />
         </button>
