@@ -43,7 +43,7 @@ export default function CartPage() {
         ) : (
           <div className="menu-layout">
             <div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 22 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 22 }}>
                 {items.map((item) => (
                   <CartItemRow key={item.product.id} item={item} updateQuantity={updateQuantity} removeItem={removeItem} />
                 ))}
@@ -67,12 +67,12 @@ export default function CartPage() {
                   Proceed to Checkout <Icon name="chevronRight" size={16} />
                 </Button>
                 {user ? (
-                  <Button variant="ghost" onClick={() => go('/profile')} className="w-full mt-4">
-                    Delivery Address
+                  <Button variant="ghost" onClick={() => go('/profile')} className="w-full mt-2">
+                    Manage Delivery Profile
                   </Button>
                 ) : (
-                  <Button variant="ghost" onClick={() => go('/login')} className="w-full mt-4">
-                    Login to save address
+                  <Button variant="ghost" onClick={() => go('/login')} className="w-full mt-2">
+                    Login to Save Address
                   </Button>
                 )}
                 <button onClick={clearCart} style={{ width: '100%', minHeight: 40, marginTop: 8, background: 'transparent', color: '#a3a3a2', border: '1px solid rgba(255,255,255,.12)', borderRadius: 99, fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>Clear cart</button>
@@ -88,19 +88,19 @@ export default function CartPage() {
 function CartItemRow({ item, updateQuantity, removeItem }: { item: any; updateQuantity: any; removeItem: any }) {
   const lineTotal = item.product.price * item.quantity;
   return (
-    <div style={{ border: '1px solid rgba(255,255,255,.08)', borderRadius: 18, overflow: 'hidden', background: 'var(--smoke)', display: 'flex', gap: 10, alignItems: 'center', padding: 12 }}>
-      <Image src={item.product.image} alt={item.product.name} width={100} height={100} style={{ display: 'block', borderRadius: 10, objectFit: 'cover', flex: '0 0 100px' }} />
-      <div style={{ flex: 1, minWidth: 0, paddingRight: 10 }}>
-        <div style={{ fontSize: '14px', fontWeight: 800, color: '#f5f5f0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.product.name}</div>
-        <div style={{ fontSize: '12px', color: '#a3a3a2', marginTop: 3 }}>{formatKES(item.product.price)} each</div>
+    <div style={{ border: '1px solid rgba(255,255,255,.08)', borderRadius: 18, overflow: 'hidden', background: 'var(--smoke)', display: 'flex', gap: 14, alignItems: 'center', padding: 14, flexWrap: 'wrap' }}>
+      <Image src={item.product.image} alt={item.product.name} width={80} height={80} style={{ display: 'block', borderRadius: 10, objectFit: 'cover', flex: '0 0 80px' }} />
+      <div style={{ flex: 1, minWidth: 160 }}>
+        <div style={{ fontSize: '15px', fontWeight: 800, color: '#f5f5f0' }}>{item.product.name}</div>
+        <div style={{ fontSize: '13px', color: '#a3a3a2', marginTop: 3 }}>{formatKES(item.product.price)} each</div>
       </div>
       <div className="stepper" style={{ color: '#f5f5f0', background: 'rgba(255,255,255,.06)' }}>
-        <button onClick={() => updateQuantity(item.product, Math.max(1, item.quantity - 1))}><Icon name="minus" size={16} /></button>
+        <button onClick={() => updateQuantity(item.product, Math.max(1, item.quantity - 1))} aria-label="Decrease quantity"><Icon name="minus" size={16} /></button>
         <span style={{ color: '#f5f5f0' }}>{item.quantity}</span>
-        <button onClick={() => updateQuantity(item.product, item.quantity + 1)}><Icon name="plus" size={16} /></button>
+        <button onClick={() => updateQuantity(item.product, item.quantity + 1)} aria-label="Increase quantity"><Icon name="plus" size={16} /></button>
       </div>
-      <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, color: '#f59e0b', minWidth: 60, textAlign: 'right' }}>{formatKES(lineTotal)}</div>
-      <button onClick={() => removeItem(item.product)} style={{ padding: 6, color: '#a3a3a2', background: 'transparent', border: 0, cursor: 'pointer' }} title="Remove"><Icon name="trash" size={16} /></button>
+      <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, color: '#f59e0b', minWidth: 80, textAlign: 'right', fontSize: 16 }}>{formatKES(lineTotal)}</div>
+      <button onClick={() => removeItem(item.product)} style={{ padding: 6, color: '#a3a3a2', background: 'transparent', border: 0, cursor: 'pointer' }} title="Remove item" aria-label={`Remove ${item.product.name}`}><Icon name="trash" size={18} /></button>
     </div>
   );
 }

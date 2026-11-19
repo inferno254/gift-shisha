@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useAppContext } from '@/context/AppContext';
@@ -108,18 +109,21 @@ export default function ShopClient({ initialCategory }: { initialCategory?: stri
 
 function ProductCard({ item, onAdd }: { item: typeof shishaProducts[number]; onAdd: () => void }) {
   return (
-    <article className="product-card" onClick={onAdd} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && onAdd()}>
-      <div className="product-image">
-        <Image src={item.image} alt={item.name} width={400} height={300} style={{ display: 'block' }} />
-        {item.featured && <span className="card-badge">Featured</span>}
-        <button className="heart" aria-label="Like"><Icon name="heart" size={18} /></button>
-      </div>
+    <article className="product-card">
+      <Link href={`/shop/${item.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+        <div className="product-image">
+          <Image src={item.image} alt={item.name} width={400} height={300} style={{ display: 'block' }} />
+          {item.featured && <span className="card-badge">Featured</span>}
+        </div>
+      </Link>
       <div className="product-info">
-        <h3>{item.name}</h3>
+        <Link href={`/shop/${item.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <h3>{item.name}</h3>
+        </Link>
         <p>{item.description}</p>
         <div className="product-row">
           <span className="product-price">{formatKES(item.price)}</span>
-          <button className="add-button" onClick={(e) => { e.stopPropagation(); onAdd(); }} aria-label={`Add ${item.name} to cart`}>
+          <button className="add-button" onClick={() => onAdd()} aria-label={`Add ${item.name} to cart`}>
             <Icon name="plus" size={16} />
           </button>
         </div>
@@ -129,7 +133,7 @@ function ProductCard({ item, onAdd }: { item: typeof shishaProducts[number]; onA
 }
 
 function CartSummary() {
-  const { items, subtotal, clearCart } = useCartContext();
+  const { items, subtotal, clearCart, addItem, updateQuantity } = useCartContext();
   const { selectedDeliveryFee, deliveryZoneName, go } = useAppContext();
   const deliveryFee = items.length > 0 ? (subtotal >= 3000 ? 0 : selectedDeliveryFee) : 0;
   const total = subtotal + deliveryFee;
@@ -153,7 +157,10 @@ function CartSummary() {
                   <div style={{ fontSize: '13px', fontWeight: 800, color: '#f5f5f0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.product.name}</div>
                   <div style={{ fontSize: '11px', color: '#a3a3a2', marginTop: 2 }}>{formatKES(item.product.price)} x {item.quantity}</div>
                 </div>
-                <button onClick={() => {}} style={{ padding: 4, color: '#a3a3a2', background: 'transparent', border: 0, cursor: 'pointer' }} title="Remove">
+                <button onClick={() => addItem(item.product)} style={{ padding: 4, color: '#a3a3a2', background: 'transparent', border: 0, cursor: 'pointer' }} title="Add one">
+                  <Icon name="plus" size={14} />
+                </button>
+                <button onClick={() => updateQuantity(item.product, item.quantity - 1)} style={{ padding: 4, color: '#a3a3a2', background: 'transparent', border: 0, cursor: 'pointer' }} title="Remove">
                   <Icon name="trash" size={16} />
                 </button>
               </div>

@@ -24,7 +24,7 @@ interface CartContextType {
   items: CartItem[];
   cartCount: number;
   subtotal: number;
-  addItem: (product: CartItem['product']) => void;
+  addItem: (product: CartItem['product'], quantity?: number) => void;
   removeItem: (product: CartItem['product']) => void;
   updateQuantity: (product: CartItem['product'], quantity: number) => void;
   clearCart: () => void;
@@ -103,15 +103,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(timer);
   }, [items, user?.id, persistCart]);
 
-  const addItem = (product: CartItem['product']) => {
+  const addItem = (product: CartItem['product'], quantityToAdd: number = 1) => {
+    const qty = Math.max(1, quantityToAdd);
     setItems((prev) => {
       const existing = prev.find((i) => i.product.id === product.id);
       if (existing) {
         return prev.map((i) =>
-          i.product.id === product.id ? { ...i, quantity: i.quantity + 1 } : i
+          i.product.id === product.id ? { ...i, quantity: i.quantity + qty } : i
         );
       }
-      return [...prev, { product, quantity: 1 }];
+      return [...prev, { product, quantity: qty }];
     });
   };
 

@@ -100,13 +100,11 @@ export default function HomePage() {
         </div>
         <div className="category-scroll">
           {shishaCategories.map((cat) => (
-            <Link key={cat.slug} href={`/shop?category=${cat.slug}`} passHref legacyBehavior>
-              <div className="category-chip">
-                <div className="category-photo"><Image src={cat.image} alt={cat.name} width={64} height={64} /></div>
-                {cat.name}
-                <small>{cat.slug === 'pipes' ? 'From KES 4,200' : cat.slug === 'flavours' ? 'From KES 450' : cat.slug === 'charcoal' ? 'From KES 200' : cat.slug === 'accessories' ? 'From KES 200' : 'From KES 6,200'}</small>
-                <div className="category-arrow"><Icon name="chevronRight" size={14} /></div>
-              </div>
+            <Link key={cat.slug} href={`/shop?category=${cat.slug}`} className="category-chip" style={{ textDecoration: 'none' }}>
+              <div className="category-photo"><Image src={cat.image} alt={cat.name} width={64} height={64} /></div>
+              {cat.name}
+              <small>{cat.slug === 'pipes' ? 'From KES 4,200' : cat.slug === 'flavours' ? 'From KES 450' : cat.slug === 'charcoal' ? 'From KES 200' : cat.slug === 'accessories' ? 'From KES 200' : 'From KES 6,200'}</small>
+              <div className="category-arrow"><Icon name="chevronRight" size={14} /></div>
             </Link>
           ))}
         </div>
@@ -159,18 +157,21 @@ export default function HomePage() {
 
 function ProductCard({ item, onAdd }: { item: typeof shishaProducts[number]; onAdd: () => void }) {
   return (
-    <article className="product-card" onClick={onAdd} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && onAdd()}>
-      <div className="product-image">
-        <Image src={item.image} alt={item.name} width={400} height={300} className="cover" style={{ display: 'block' }} />
-        {item.featured && <span className="card-badge">Featured</span>}
-        <button className="heart" aria-label="Like"><Icon name="heart" size={18} /></button>
-      </div>
+    <article className="product-card">
+      <Link href={`/shop/${item.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+        <div className="product-image">
+          <Image src={item.image} alt={item.name} width={400} height={300} className="cover" style={{ display: 'block' }} />
+          {item.featured && <span className="card-badge">Featured</span>}
+        </div>
+      </Link>
       <div className="product-info">
-        <h3>{item.name}</h3>
+        <Link href={`/shop/${item.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <h3>{item.name}</h3>
+        </Link>
         <p>{item.description}</p>
         <div className="product-row">
           <span className="product-price">{formatKES(item.price)}</span>
-          <button className="add-button" onClick={(e) => { e.stopPropagation(); onAdd(); }} aria-label={`Add ${item.name} to cart`}>
+          <button className="add-button" onClick={() => onAdd()} aria-label={`Add ${item.name} to cart`}>
             <Icon name="plus" size={16} />
           </button>
         </div>

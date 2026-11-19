@@ -32,7 +32,7 @@ export default function ProductPage() {
 
   const handleAdd = () => {
     if (!inStock || qty < 1) return;
-    addItem({ ...product, quantity: qty } as any);
+    addItem(product, qty);
     router.push('/cart');
   };
 
@@ -159,7 +159,7 @@ function CartSummary({ product, addItem }: { product: any; addItem: any }) {
       <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,.08)' }}>
         <p style={{ marginBottom: 8, color: '#a3a3a2', fontSize: '13px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.12em' }}>{product.name}</p>
         <p style={{ marginBottom: 10, color: '#a3a3a2', fontSize: '13px' }}>{formatKES(product.price)}</p>
-        <Button variant="amber" onClick={() => { addItem({ ...product, quantity: 1 } as any); go('/checkout'); }} disabled={!canAdd} className="w-full">
+        <Button variant="amber" onClick={() => { addItem(product, 1); go('/checkout'); }} disabled={!canAdd} className="w-full">
           {canAdd ? 'Buy Now' : 'Out of Stock'}
         </Button>
       </div>

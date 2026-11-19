@@ -38,13 +38,13 @@ export default function SuccessClient({ order, method }: { order: string; method
               <h1 style={{ color: '#f5f5f0', fontSize: 56, marginBottom: 10 }}>Order Confirmed</h1>
               <p style={{ color: '#a3a3a2', fontSize: 15, marginBottom: 26 }}>Your shisha essentials are on the way. A rider will contact you shortly.</p>
               <div className="order-number">
-                <div><span style={{ display: 'block', fontSize: '11px', fontWeight: 900, letterSpacing: '.16em', textTransform: 'uppercase', color: '#a3a3a2' }}>Order number</span><span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, color: '#f5f5f0' }}>{order || 'GSH-' + Date.now().toString().slice(-6)}</span></div>
-                <div><span style={{ display: 'block', fontSize: '11px', fontWeight: 900, letterSpacing: '.16em', textTransform: 'uppercase', color: '#a3a3a2' }}>Method</span><span style={{ fontWeight: 800, color: '#f59e0b' }}>{method === 'mpesa' ? 'M-Pesa' : 'Cash on Delivery'}</span></div>
-                <div><span style={{ display: 'block', fontSize: '11px', fontWeight: 900, letterSpacing: '.16em', textTransform: 'uppercase', color: '#a3a3a2' }}>Status</span><span style={{ fontWeight: 800, color: '#22c55e' }}>{paid ? 'Paid' : 'Pending'}</span></div>
+                <div><span style={{ display: 'block', fontSize: '11px', fontWeight: 900, letterSpacing: '.16em', textTransform: 'uppercase', color: '#a3a3a2' }}>Order number</span><span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, color: '#f5f5f0' }}>{order && order !== 'pending' ? order : 'GSH-' + Math.floor(100000 + Math.random() * 900000)}</span></div>
+                <div><span style={{ display: 'block', fontSize: '11px', fontWeight: 900, letterSpacing: '.16em', textTransform: 'uppercase', color: '#a3a3a2' }}>Method</span><span style={{ fontWeight: 800, color: '#f59e0b' }}>{method === 'mpesa' ? 'M-Pesa STK' : 'Cash on Delivery'}</span></div>
+                <div><span style={{ display: 'block', fontSize: '11px', fontWeight: 900, letterSpacing: '.16em', textTransform: 'uppercase', color: '#a3a3a2' }}>Status</span><span style={{ fontWeight: 800, color: '#22c55e' }}>{paid ? 'Confirmed & Dispatched' : 'Payment Processing'}</span></div>
               </div>
-              <div style={{ display: 'flex', gap: 10, marginTop: 22 }}>
-                <Button variant="amber" onClick={() => router.push('/tracking')} className="flex-1">Track Order</Button>
-                <Button variant="ghost" onClick={() => router.push('/shop')}>Back to Shop</Button>
+              <div style={{ display: 'flex', gap: 10, marginTop: 22, flexWrap: 'wrap', justifyContent: 'center' }}>
+                <Button variant="amber" onClick={() => router.push('/tracking')} className="flex-1 min-w-[180px]">Track Order Live</Button>
+                <Button variant="ghost" onClick={() => router.push('/shop')} className="min-w-[140px]">Back to Shop</Button>
               </div>
             </>
           )}

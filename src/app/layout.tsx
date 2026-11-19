@@ -3,6 +3,8 @@ import { Bricolage_Grotesque, DM_Sans } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
 import Providers from '@/components/Providers';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 
 const bricolage = Bricolage_Grotesque({
   subsets: ['latin'],
@@ -72,8 +74,12 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="font-sans antialiased">
-        <Providers>{children}</Providers>
+      <body className="font-sans antialiased min-h-screen flex flex-col bg-[var(--ink)] text-[var(--cream)]">
+        <Providers>
+          <Header />
+          <div className="flex-1">{children}</div>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

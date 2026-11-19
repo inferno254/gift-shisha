@@ -14,15 +14,13 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export { ThemeContext };
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light');
+  const [theme, setTheme] = useState<Theme>('dark');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('gift-shisha-theme') as Theme | null;
     if (saved) {
       setTheme(saved);
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setTheme('dark');
     }
     setMounted(true);
   }, []);
