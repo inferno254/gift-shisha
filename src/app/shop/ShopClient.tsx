@@ -123,7 +123,7 @@ function ProductCard({ item, onAdd }: { item: typeof shishaProducts[number]; onA
         <p>{item.description}</p>
         <div className="product-row">
           <span className="product-price">{formatKES(item.price)}</span>
-          <button className="add-button" onClick={() => onAdd()} aria-label={`Add ${item.name} to cart`}>
+          <button className="add-button" onClick={(e) => { e.stopPropagation(); onAdd(); }} aria-label={`Add ${item.name} to cart`}>
             <Icon name="plus" size={16} />
           </button>
         </div>
